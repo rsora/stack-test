@@ -1,0 +1,55 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test:
+    name: Run tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v3.5.2
+        with:
+          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+
+  create_release:
+    name: Create release
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    needs:
+      - test
+    steps:
+      - name: Turnstyle
+        uses: softprops/turnstyle@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Check out code
+        uses: actions/checkout@v3.5.2
+        with:
+          fetch-depth: 0
+      - name: Determine if on tag
+        id: on_tag
+        run: |
+          ON_TAG=$(git describe --exact-match --tags HEAD 2>&1 || true)
+          if [[ "${ON_TAG}" =~ "no tag exactly matches" ]]; then
+            echo "::set-output name=on_tag::no"
+          elif [[ "${ON_TAG}" =~ "No names found" ]]; then
+            echo "::set-output name=on_tag::no"
+          else
+            echo "::set-output name=on_tag::yes"
+          fi
+      - name: Create Release
+        if: steps.on_tag.outputs.on_tag == 'no'
+        id: create_release
+        uses: zendesk/action-create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          auto_increment_type: major
+
