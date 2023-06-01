@@ -3,10 +3,12 @@ name: CI
 on:
   push:
     branches:
-      - main
+      - '**'
+    ignore_tags:
+      - '**'
   pull_request:
     branches:
-      - main
+      - '**'
 
 jobs:
   test:
