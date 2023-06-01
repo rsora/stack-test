@@ -48,9 +48,8 @@ jobs:
         if: steps.on_tag.outputs.on_tag == 'no'
         id: create_release
         uses: zendesk/action-create-release@v1
-#        env:
-#          GITHUB_TOKEN:
+        env:
+          GITHUB_TOKEN: ${{ secrets.TOKEN_DEPLOY }}
         with:
-          ssh-key: ${{ secrets.TOKEN_DEPLOY }}
           auto_increment_type: major
 
