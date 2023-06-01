@@ -3,8 +3,11 @@ name: CI
 on:
   push:
     branches:
-      - '**'
+      - master
     ignore_tags:
+      - '**'
+  pull_request:
+    branches:
       - '**'
 
 jobs:
