@@ -6,9 +6,6 @@ on:
       - '**'
     ignore_tags:
       - '**'
-  pull_request:
-    branches:
-      - '**'
 
 jobs:
   test:
